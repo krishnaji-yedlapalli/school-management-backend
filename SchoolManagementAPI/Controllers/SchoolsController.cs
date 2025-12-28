@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SchoolManagementAPI.Models;
-using SchoolManagementAPI.Repositories.Interfaces;
+using SchoolManagementAPI.Services.Interfaces;
 
 namespace SchoolManagementAPI.Controllers;
 
@@ -8,12 +8,12 @@ namespace SchoolManagementAPI.Controllers;
 [Route("api/[controller]")]
 public class SchoolsController : ControllerBase
 {
-    private readonly ISchoolRepository _schoolRepository;
+    private readonly ISchoolService _schoolService;
     private readonly ILogger<SchoolsController> _logger;
     
-    public SchoolsController(ISchoolRepository schoolRepository, ILogger<SchoolsController> logger)
+    public SchoolsController(ISchoolService schoolService, ILogger<SchoolsController> logger)
     {
-        _schoolRepository = schoolRepository;
+        _schoolService = schoolService;
         _logger = logger;
     }
     
@@ -23,7 +23,7 @@ public class SchoolsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<School>>> GetAllSchools()
     {
-        var schools = await _schoolRepository.GetAllAsync();
+        var schools = await _schoolService.GetAllSchoolsAsync();
         return Ok(schools);
     }
     
@@ -33,7 +33,7 @@ public class SchoolsController : ControllerBase
     [HttpGet("{id}")]
     public async Task<ActionResult<School>> GetSchool(int id)
     {
-        var school = await _schoolRepository.GetByIdAsync(id);
+        var school = await _schoolService.GetSchoolByIdAsync(id);
         
         if (school == null)
         {
@@ -49,13 +49,13 @@ public class SchoolsController : ControllerBase
     [HttpGet("{id}/classes")]
     public async Task<ActionResult<IEnumerable<Class>>> GetSchoolClasses(int id)
     {
-        var schoolExists = await _schoolRepository.ExistsAsync(id);
+        var schoolExists = await _schoolService.SchoolExistsAsync(id);
         if (!schoolExists)
         {
             return NotFound($"School with ID {id} not found");
         }
         
-        var classes = await _schoolRepository.GetClassesBySchoolIdAsync(id);
+        var classes = await _schoolService.GetSchoolClassesAsync(id);
         return Ok(classes);
     }
     
@@ -70,7 +70,7 @@ public class SchoolsController : ControllerBase
             return BadRequest(ModelState);
         }
         
-        var createdSchool = await _schoolRepository.AddAsync(school);
+        var createdSchool = await _schoolService.CreateSchoolAsync(school);
         return CreatedAtAction(nameof(GetSchool), new { id = createdSchool.Id }, createdSchool);
     }
     
@@ -85,13 +85,13 @@ public class SchoolsController : ControllerBase
             return BadRequest("ID mismatch");
         }
         
-        var exists = await _schoolRepository.ExistsAsync(id);
+        var exists = await _schoolService.SchoolExistsAsync(id);
         if (!exists)
         {
             return NotFound($"School with ID {id} not found");
         }
         
-        await _schoolRepository.UpdateAsync(school);
+        await _schoolService.UpdateSchoolAsync(id, school);
         return NoContent();
     }
     
@@ -101,13 +101,13 @@ public class SchoolsController : ControllerBase
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteSchool(int id)
     {
-        var exists = await _schoolRepository.ExistsAsync(id);
+        var exists = await _schoolService.SchoolExistsAsync(id);
         if (!exists)
         {
             return NotFound($"School with ID {id} not found");
         }
         
-        await _schoolRepository.DeleteAsync(id);
+        await _schoolService.DeleteSchoolAsync(id);
         return NoContent();
     }
 }

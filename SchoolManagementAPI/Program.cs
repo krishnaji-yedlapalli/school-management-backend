@@ -4,6 +4,8 @@ using SchoolManagementAPI.Data;
 using SchoolManagementAPI.Middleware;
 using SchoolManagementAPI.Repositories.Implementations;
 using SchoolManagementAPI.Repositories.Interfaces;
+using SchoolManagementAPI.Services.Implementations;
+using SchoolManagementAPI.Services.Interfaces;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,15 +16,16 @@ builder.Services.AddControllers()
         options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
 
-// Configure SQLite Database
+// Configure SQL Server Database
 builder.Services.AddDbContext<SchoolDbContext>(options =>
-    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Register Repositories
 builder.Services.AddScoped<ISchoolRepository, SchoolRepository>();
 builder.Services.AddScoped<IClassRepository, ClassRepository>();
 builder.Services.AddScoped<IStudentRepository, StudentRepository>();
 builder.Services.AddScoped<ITeacherRepository, TeacherRepository>();
+builder.Services.AddScoped<ISchoolService, SchoolService>();
 
 // Configure Swagger/OpenAPI
 builder.Services.AddEndpointsApiExplorer();

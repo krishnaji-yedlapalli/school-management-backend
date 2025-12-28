@@ -40,11 +40,14 @@ public class Repository<T> : IRepository<T> where T : class
     
     public virtual async Task DeleteAsync(int id)
     {
-        var entity = await GetByIdAsync(id);
-        if (entity != null)
+        // Demonstrating Raw SQL for data modification (DML)
+        // Note: We need to know the table name. For generic repository, it's safer to use EF methods
+        // but since you want to learn SQL, here is the command format:
+        var tableName = _context.Model.FindEntityType(typeof(T))?.GetTableName();
+        if (!string.IsNullOrEmpty(tableName))
         {
-            _dbSet.Remove(entity);
-            await _context.SaveChangesAsync();
+            var sql = $"DELETE FROM {tableName} WHERE Id = {{0}}";
+            await _context.Database.ExecuteSqlRawAsync(sql, id);
         }
     }
     
