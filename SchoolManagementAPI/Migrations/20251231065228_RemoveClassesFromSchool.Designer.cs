@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SchoolManagementAPI.Data;
 
@@ -11,9 +12,11 @@ using SchoolManagementAPI.Data;
 namespace SchoolManagementAPI.Migrations
 {
     [DbContext(typeof(SchoolDbContext))]
-    partial class SchoolDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251231065228_RemoveClassesFromSchool")]
+    partial class RemoveClassesFromSchool
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -30,15 +33,8 @@ namespace SchoolManagementAPI.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("AcademicYear")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<int>("Grade")
                         .HasColumnType("int");
-
-                    b.Property<bool>("IsActive")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -210,17 +206,19 @@ namespace SchoolManagementAPI.Migrations
 
             modelBuilder.Entity("SchoolManagementAPI.Models.Class", b =>
                 {
-                    b.HasOne("SchoolManagementAPI.Models.School", null)
+                    b.HasOne("SchoolManagementAPI.Models.School", "School")
                         .WithMany()
                         .HasForeignKey("SchoolId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.Navigation("School");
                 });
 
             modelBuilder.Entity("SchoolManagementAPI.Models.Student", b =>
                 {
                     b.HasOne("SchoolManagementAPI.Models.Class", "Class")
-                        .WithMany()
+                        .WithMany("Students")
                         .HasForeignKey("ClassId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -231,12 +229,19 @@ namespace SchoolManagementAPI.Migrations
             modelBuilder.Entity("SchoolManagementAPI.Models.Teacher", b =>
                 {
                     b.HasOne("SchoolManagementAPI.Models.Class", "Class")
-                        .WithMany()
+                        .WithMany("Teachers")
                         .HasForeignKey("ClassId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Class");
+                });
+
+            modelBuilder.Entity("SchoolManagementAPI.Models.Class", b =>
+                {
+                    b.Navigation("Students");
+
+                    b.Navigation("Teachers");
                 });
 #pragma warning restore 612, 618
         }

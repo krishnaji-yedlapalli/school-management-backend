@@ -1,4 +1,5 @@
 using SchoolManagementAPI.Models;
+using SchoolManagementAPI.DTOs;
 using SchoolManagementAPI.Repositories.Interfaces;
 using SchoolManagementAPI.Services.Interfaces;
 
@@ -15,10 +16,23 @@ public class SchoolService : ISchoolService
         _logger = logger;
     }
 
-    public async Task<IEnumerable<School>> GetAllSchoolsAsync()
+    public async Task<IEnumerable<SchoolSummaryDto>> GetAllSchoolsAsync()
     {
         _logger.LogInformation("Fetching all schools");
-        return await _schoolRepository.GetAllAsync();
+        var schools = await _schoolRepository.GetAllAsync();
+        
+        return schools.Select(s => new SchoolSummaryDto
+        {
+            Id = s.Id,
+            Code = s.Code,
+            Name = s.Name,
+            Board = s.Board,
+            RegistrationNumber = s.RegistrationNumber,
+            StartTime = s.StartTime,
+            EndTime = s.EndTime,
+            Country = s.Country,
+            City = s.City
+        });
     }
 
     public async Task<School?> GetSchoolByIdAsync(int id)

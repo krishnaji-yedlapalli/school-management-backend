@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using SchoolManagementAPI.Models;
+using SchoolManagementAPI.DTOs;
 using SchoolManagementAPI.Services.Interfaces;
 
 namespace SchoolManagementAPI.Controllers;
@@ -21,7 +22,7 @@ public class SchoolsController : ControllerBase
     /// Get all schools
     /// </summary>
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<School>>> GetAllSchools()
+    public async Task<ActionResult<IEnumerable<SchoolSummaryDto>>> GetAllSchools()
     {
         var schools = await _schoolService.GetAllSchoolsAsync();
         return Ok(schools);

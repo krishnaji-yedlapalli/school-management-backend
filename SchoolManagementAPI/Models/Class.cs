@@ -8,9 +8,6 @@ public class Class
     
     // Foreign key
     public int SchoolId { get; set; }
-    
-    // Navigation properties
-    public School School { get; set; } = null!;
-    public ICollection<Student> Students { get; set; } = new List<Student>();
-    public ICollection<Teacher> Teachers { get; set; } = new List<Teacher>();
+    public string AcademicYear { get; set; } = string.Empty;
+    public bool IsActive { get; set; }
 }

@@ -16,7 +16,6 @@ public class SchoolRepository : Repository<School>, ISchoolRepository
         // Using Raw SQL to fetch all schools
         return await _context.Schools
             .FromSqlRaw("SELECT * FROM Schools")
-            .Include(s => s.Classes)
             .ToListAsync();
     }
     
@@ -25,7 +24,6 @@ public class SchoolRepository : Repository<School>, ISchoolRepository
         // Using Raw SQL with a parameter to fetch a specific school
         return await _context.Schools
             .FromSqlRaw("SELECT * FROM Schools WHERE Id = {0}", id)
-            .Include(s => s.Classes)
             .FirstOrDefaultAsync();
     }
     
@@ -34,8 +32,6 @@ public class SchoolRepository : Repository<School>, ISchoolRepository
         // Using Raw SQL to fetch classes for a specific school
         return await _context.Classes
             .FromSqlRaw("SELECT * FROM Classes WHERE SchoolId = {0}", schoolId)
-            .Include(c => c.Students)
-            .Include(c => c.Teachers)
             .ToListAsync();
     }
 }

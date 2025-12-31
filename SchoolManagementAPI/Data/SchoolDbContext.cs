@@ -18,24 +18,24 @@ public class SchoolDbContext : DbContext
     {
         base.OnModelCreating(modelBuilder);
         
-        // Configure School -> Classes relationship
-        modelBuilder.Entity<School>()
-            .HasMany(s => s.Classes)
-            .WithOne(c => c.School)
+        // Configure School -> Classes relationship (One-to-Many, but no navigation properties)
+        modelBuilder.Entity<Class>()
+            .HasOne<School>()
+            .WithMany()
             .HasForeignKey(c => c.SchoolId)
             .OnDelete(DeleteBehavior.Cascade);
         
-        // Configure Class -> Students relationship
-        modelBuilder.Entity<Class>()
-            .HasMany(c => c.Students)
-            .WithOne(s => s.Class)
+        // Configure Class -> Students relationship (Student has Class navigation, Class does not have Students)
+        modelBuilder.Entity<Student>()
+            .HasOne(s => s.Class)
+            .WithMany()
             .HasForeignKey(s => s.ClassId)
             .OnDelete(DeleteBehavior.Cascade);
         
-        // Configure Class -> Teachers relationship
-        modelBuilder.Entity<Class>()
-            .HasMany(c => c.Teachers)
-            .WithOne(t => t.Class)
+        // Configure Class -> Teachers relationship (Teacher has Class navigation, Class does not have Teachers)
+        modelBuilder.Entity<Teacher>()
+            .HasOne(t => t.Class)
+            .WithMany()
             .HasForeignKey(t => t.ClassId)
             .OnDelete(DeleteBehavior.Cascade);
     }

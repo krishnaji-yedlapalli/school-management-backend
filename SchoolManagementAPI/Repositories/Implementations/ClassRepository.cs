@@ -14,18 +14,12 @@ public class ClassRepository : Repository<Class>, IClassRepository
     public override async Task<IEnumerable<Class>> GetAllAsync()
     {
         return await _context.Classes
-            .Include(c => c.School)
-            .Include(c => c.Students)
-            .Include(c => c.Teachers)
             .ToListAsync();
     }
     
     public override async Task<Class?> GetByIdAsync(int id)
     {
         return await _context.Classes
-            .Include(c => c.School)
-            .Include(c => c.Students)
-            .Include(c => c.Teachers)
             .FirstOrDefaultAsync(c => c.Id == id);
     }
     
